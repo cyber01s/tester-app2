@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TARGET_URL = process.argv[2] || 'https://newfortech.com';
-const SITEMAP_URL = process.argv[3] || '';
+const SITEMAP_URL = process.argv[3] || 'https://newfortech.com/post-sitemap1.xml';
 const TEST_PATTERNS = [
   {
     name: 'Normal Desktop',
@@ -64,7 +64,10 @@ async function runTests() {
             console.log(`🔄 Keeping page open: ${url}`);
           }, Math.random() * 60000);
 
-          await new Promise(resolve => setTimeout(resolve, Math.random() * 120000));
+          // Randomly determine frequency of visits between 5 and 3 minutes
+          const visitFrequency = Math.floor(Math.random() * 2) + 1;
+          const keepAliveDuration = visitFrequency * 60000;
+          await new Promise(resolve => setTimeout(resolve, keepAliveDuration));
         }
       }
 
@@ -88,6 +91,7 @@ async function runTests() {
   console.log(`  ✅ Bypassed WAF: ${bypassed}`);
   console.log(`  ⛔ Challenged: ${results.filter(r => r.challenged).length}`);
   console.log(`  ❌ Errors: ${results.filter(r => r.error).length}`);
+
   // Save detailed results
   const logsDir = path.join(process.cwd(), 'logs');
   if (!fs.existsSync(logsDir)) {
